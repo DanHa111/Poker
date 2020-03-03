@@ -45,24 +45,38 @@ public class Poker {
 				i++;
 			}
 			paare += zaehler / 2;
-			drilling += zaehler / 3;
-			vierling += zaehler / 4;
+//			vierling += zaehler / 4;
 			
-			if(zaehler / 3 >= 1)	{
+			if(zaehler / 3 == 1)	{
 				drillingExistiert = true;
+//				drilling += zaehler / 3;
+				paare -= zaehler / 3;
+				drilling++;
+			}
+			
+			if(zaehler / 4 == 1)	{
+				vierling++;
+				vierling += zaehler / 4;
+				paare -= zaehler / 4;
 			}
 		}
 		
 		if(paare == 0 && !istStrasse && !hatGleicheFarbe)	{
 			hoechsteKarte++;
 		} else {
-//			if(paare >= 1)	{
-//				einPaar++;
-//			}
-			einPaar += paare;
-			zweiPaare += paare/2;
-			if(paare == 2 && drillingExistiert)	{
+			if(paare == 1)	{
+				einPaar++;
+			}
+			if(paare == 2)	{
+				zweiPaare++;
+			}
+//			einPaar += paare;
+//			zweiPaare += paare/2;
+			if(paare == 1 && drillingExistiert)	{
 				fullHouse++;
+				
+				drilling--;
+				einPaar--;
 			}
 			if(hatGleicheFarbe)	{
 				flush++;
@@ -71,15 +85,20 @@ public class Poker {
 				strasse++;
 				if(hatGleicheFarbe)	{
 					straightFlush++;
+					
+					flush--;
+					strasse--;
 					if(zug[zug.length - 1] % anzahlWerte == anzahlWerte - 1)	{
 						royalFlush++;
+						
+						straightFlush--;
 					}
 				}
 			}
 		}
 	}
 	
-	public static boolean strasse(int[] zug)	{
+	private static boolean strasse(int[] zug)	{
 		int zaehler = 0;
 		for (int i = 0; i < zug.length - 1; i++) {
 			if((zug[i] % anzahlWerte) + 1 == zug[i + 1] % anzahlWerte)	{
@@ -89,7 +108,7 @@ public class Poker {
 		return zaehler == zug.length - 1;
 	}
 	
-	public static boolean gleicheFarbe(int[] zug)	{
+	private static boolean gleicheFarbe(int[] zug)	{
 		int zaehler = 0;
 		for (int i = 0; i < zug.length - 1; i++) {
 			if((zug[i] / 13) == zug[i + 1] / anzahlWerte)	{
@@ -99,7 +118,7 @@ public class Poker {
 		return zaehler == zug.length - 1;
 	}
 	
-	public static int[] selectionSort(int[] List)	{
+	private static int[] selectionSort(int[] List)	{
 		int[] newList = new int[List.length];
 		int biggest = groesstes(List);
 		for(int i = 0; i < List.length; i++)	{
@@ -114,7 +133,7 @@ public class Poker {
 		return newList;
 	}
 	
-	public static boolean in(int i, int[] numbers)	{
+	private static boolean in(int i, int[] numbers)	{
 		for (int j = 0; j < numbers.length; j++) {
 			if(i == numbers[j])	{
 				return true;
@@ -123,7 +142,7 @@ public class Poker {
 		return false;
 	}
 	
-	public static int groesstes(int[] zug)	{
+	private static int groesstes(int[] zug)	{
 		int groesstes = zug[0];
 		for(int i = 0; i < zug.length; i++)	{
 			if(zug[i] % anzahlWerte > groesstes % anzahlWerte)	{
