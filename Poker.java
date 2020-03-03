@@ -7,7 +7,7 @@ public class Poker {
 	public static final int anzahlWerte = 13;
 	public static final int anzahlFarben = 4;
 	public static final int anzahlKartenZug = 5;
-	public static int anzahlVersuche = 100000;
+	public static int anzahlVersuche = 1000000;
 	
 	public static int hoechsteKarte = 0;
 	public static int einPaar = 0;
@@ -37,6 +37,7 @@ public class Poker {
 		boolean hatGleicheFarbe = gleicheFarbe(zug);
 		int paare = 0;
 		boolean drillingExistiert = false;
+		boolean gleicheWerte = false;
 		int zaehler;
 		for (int i = 0; i < zug.length - 1; i++) {
 			zaehler = 1;
@@ -44,57 +45,39 @@ public class Poker {
 				zaehler++;
 				i++;
 			}
-			paare += zaehler / 2;
-//			vierling += zaehler / 4;
-			
-			if(zaehler / 3 == 1)	{
-				drillingExistiert = true;
-//				drilling += zaehler / 3;
-				paare -= zaehler / 3;
-				drilling++;
-			}
-			
-			if(zaehler / 4 == 1)	{
-				vierling++;
-				vierling += zaehler / 4;
-				paare -= zaehler / 4;
+			switch(zaehler)	{
+			case 2: paare++; gleicheWerte = true; break;
+			case 3: drillingExistiert = true; gleicheWerte = true; break;
+			case 4: vierling++; gleicheWerte = true; break;
+			default: break;
 			}
 		}
 		
-		if(paare == 0 && !istStrasse && !hatGleicheFarbe)	{
+		if(!istStrasse && !hatGleicheFarbe && !gleicheWerte)	{
 			hoechsteKarte++;
-		} else {
-			if(paare == 1)	{
-				einPaar++;
-			}
-			if(paare == 2)	{
-				zweiPaare++;
-			}
-//			einPaar += paare;
-//			zweiPaare += paare/2;
+		} else if(gleicheWerte) {
 			if(paare == 1 && drillingExistiert)	{
 				fullHouse++;
-				
-				drilling--;
-				einPaar--;
-			}
-			if(hatGleicheFarbe)	{
-				flush++;
-			}
-			if(istStrasse)	{
-				strasse++;
-				if(hatGleicheFarbe)	{
-					straightFlush++;
-					
-					flush--;
-					strasse--;
-					if(zug[zug.length - 1] % anzahlWerte == anzahlWerte - 1)	{
-						royalFlush++;
-						
-						straightFlush--;
+			} else	{
+				if(paare == 1)	{
+					einPaar++;
+				} else	{
+					if(paare == 2)	{
+						zweiPaare++;
+					}
+					if(drillingExistiert)	{
+						drilling++;
 					}
 				}
 			}
+		} else if(hatGleicheFarbe && istStrasse && zug[zug.length - 1] % anzahlWerte == anzahlWerte - 1)	{
+			royalFlush++;
+		} else if(hatGleicheFarbe && istStrasse)	{
+			straightFlush++;
+		} else if(hatGleicheFarbe)	{
+			flush++;
+		} else if(istStrasse)	{
+			strasse++;
 		}
 	}
 	
@@ -111,7 +94,7 @@ public class Poker {
 	private static boolean gleicheFarbe(int[] zug)	{
 		int zaehler = 0;
 		for (int i = 0; i < zug.length - 1; i++) {
-			if((zug[i] / 13) == zug[i + 1] / anzahlWerte)	{
+			if((zug[i] / anzahlWerte) == zug[i + 1] / anzahlWerte)	{
 				zaehler++;
 			}
 		}
@@ -181,7 +164,7 @@ public class Poker {
 		System.out.println("Royal Flush:		" + royalFlush);
 	}
 	
-	public static void printPercentage()	{
+	public static void printPercentages()	{
 		System.out.println("Prozentuales Ergebnis bei " + anzahlVersuche + " Versuchen:");
 		System.out.println();
 		System.out.println("Höchste Karte:		" + ((double)(hoechsteKarte)/(double)(anzahlVersuche)) * 100 + "%");
@@ -194,6 +177,9 @@ public class Poker {
 		System.out.println("Vierling:		" + ((double)(vierling)/(double)(anzahlVersuche)) * 100 + "%");
 		System.out.println("Straight Flush:		" + ((double)(straightFlush)/(double)(anzahlVersuche)) * 100 + "%");
 		System.out.println("Royal Flush:		" + ((double)(royalFlush)/(double)(anzahlVersuche)) * 100 + "%");
+		int combinationSum = hoechsteKarte + einPaar + zweiPaare + drilling + strasse + flush + fullHouse + vierling + straightFlush + royalFlush;
+		System.out.println();
+		System.out.print("Summe aller Kombinationen: " + combinationSum);
 	}
 	
 	public static void main(String[] args) {
@@ -211,8 +197,14 @@ public class Poker {
 			int[] karten2 = karten.clone();
 			countCombination(kartenzug(karten2));
 		}
-		printPercentage();
+		printPercentages();
 		
+//		int[] zug = new int[5];
+//		zug[0] = 3;
+//		zug[1] = 4;
+//		zug[2] = 7;
+//		zug[3] = 21;
+//		zug[4] = 36;
 		
 //		int[] zug = kartenzug(karten);
 //		printArray(zug);
